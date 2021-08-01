@@ -1,0 +1,160 @@
+import openpyexcel,csv,xlsxwriter
+from datetime import date
+
+# *** is name of the confidential company info
+
+print("Введи дату для сверки")
+day=int(input())
+nextDay=str(day+1)
+day=str(day)
+year = date.today().year
+month = date.today().month
+months={"01":"Январь","02":"Февраль","03":"Март","04":"Апрель","05":"Май","06":"Июнь","07":"Июль","08":"Август","09":"Сентябрь","10":"Октябрь","11":"Ноябрь","12":"Декабрь"}
+
+# Here need to plus "0" to one symbol enter ("5" => "05"). According to a file path features
+
+if int(day) < 10:
+    day = '0' + str(day)
+else:
+    day=str(day)
+if month < 10:
+    month = '0' + str(month)
+else:
+    month = +str(month)
+year = str(year)
+print("Дата сверки:",day,month,year)
+
+# Start checking
+
+def Sverka():
+
+    # Enter our provider name, creating lists, dicts, columns for csv files
+
+    PR="***"
+    l_PC,l_PR=[],[]
+    sum_PR,sum_PC,fee_PR,fee_PC=[],[],[],[]
+    d_PR_sum,d_PR_fee,d_PC_sum,d_PC_fee={},{},{},{}
+    nd_PR_in_PC,nd_PC_in_PR=[],[]
+    inv_for_sum,inv_for_fee,nd_sum_PR,nd_fee_PR,nd_sum_PC,nd_fee_PC=[],[],[],[],[],[]
+    columnsPR=['Date','Invoice','Turnover','Provider_fee']
+    columnsPC=['Date','Payment ID','Turnover','Pr Fee']
+
+    # Filling provider lists
+
+    def Lists(list,col):
+        with open('***/'+year+'/'+month+'/'+day+'/'+day+'.'+month+'.'+year+'***.csv', newline='') as File:
+            reader=csv.DictReader(File,delimiter=";")
+            for row in reader:
+                list.append(row[col])
+    Lists(l_PR,columnsPR[1])
+    Lists(sum_PR,columnsPR[2])
+    Lists(fee_PR,columnsPR[3])
+
+    # Filling provider dicts of provider lists with some str features
+
+    def Dict(dict,listInvoice,listSum):
+        for i in range(len(listInvoice)):
+            if "." not in listSum[i]:
+                listSum[i]=listSum[i]+'.00'
+            if "." in listSum[i]:
+                if listSum[i][-1]=='0':
+                    listSum[i]=listSum[i][:-1]
+            dict[listInvoice[i]]=listSum[i].replace(" ","")
+    Dict(d_PR_sum,l_PR,sum_PR)
+    Dict(d_PR_fee,l_PR,fee_PR)
+
+    # Do similar actions with PC data
+
+    def Lists_PC(list,col):
+        with open("***/"+year+"/"+month+"."+months[month]+"*** "+day+"."+month+" ***.csv", newline='') as File:
+            reader=csv.DictReader(File,delimiter=";")
+            for row in reader:
+                list.append(row[col])
+    Lists_PC(l_PC,columnsPC[1])
+    Lists_PC(sum_PC,columnsPC[2])
+    Lists_PC(fee_PC,columnsPC[3])
+
+    # Fill PC dicts
+
+    Dict(d_PC_sum,l_PC,sum_PC)
+    Dict(d_PC_fee,l_PC,fee_PC)
+    print("--Словари заполнены")
+    print("")
+
+    # Check Provider and PC dicts (checking invoices with turnover, checking invoices with fee) and creating problem
+
+    def Sverka_Dicts(dict1PR,dict2PR,dict1PC,dict2PC,PR):
+            for i in dict1PR:
+                if i not in dict1PC:
+                    print("Есть у "+PR+", нету в PC: ",i)
+                    nd_PR_in_PC.append(i)
+                elif dict1PR[i]!=dict1PC[i]:
+                    print("Не сходится оборот:\n",i,dict1PR[i], "В PC такая сумма: ",i,dict1PC[i])
+                    inv_for_sum.append(i),nd_sum_PR.append(dict1PR[i]),nd_sum_PC.append(dict1PC[i])
+            for i in dict2PR:
+                if i not in dict2PC:
+                    print('')
+                elif dict2PR[i]!=dict2PC[i]:
+                    print("Не сходится комиссия:\n",i,dict2PR[i],"В PC такая комиссия:\n",i,dict2PC[i])
+                    inv_for_fee.append(i), nd_fee_PR.append(dict2PR[i]), nd_fee_PC.append(dict2PC[i])
+            for i in dict1PC:
+                if i not in dict1PR:
+                    print("Есть в PC, нету в "+PR+": ",i)
+                    nd_PC_in_PR.append(i)
+    Sverka_Dicts(d_PR_sum,d_PR_fee,d_PC_sum,d_PC_fee,PR)
+    print("")
+    print("--Списки заполнены")
+
+    # Now we have no data invoices and mistakes in turnover and fee dicts. Here we create an xlsx file with data problems
+
+    def XlsxWriter(PR):
+        workbook = xlsxwriter.Workbook("***"+year+"/"+month+"."+months[month]+"/***/"+day+"."+month+"."+year+" "+PR+".xlsx")
+        worksheet1 = workbook.add_worksheet("Есть у "+PR+" нету в PC")
+        worksheet2 = workbook.add_worksheet("Есть в PC, нету у "+PR)
+        worksheet3 = workbook.add_worksheet("Оборот")
+        worksheet4 = workbook.add_worksheet("Комиссия")
+
+        # Here some features in filling columns and strings in xlsx
+
+        def FillSheetsInv(w1,w2,w3,w4):
+            row,col=0,0
+            for i in nd_PR_in_PC:
+                w1.write(row,col,i)
+                row+=1
+            row,col=0,0
+            for i in nd_PC_in_PR:
+                w2.write(row, col, i)
+                row += 1
+            row,col=0,0
+            for i in inv_for_sum:
+                w3.write(row, col, i)
+                row += 1
+            row,col=0,0
+            for i in nd_sum_PR:
+                w3.write(row, col+1, i)
+                row += 1
+            row=0
+            for i in nd_sum_PC:
+                w3.write(row, col+2, i)
+                row += 1
+            row, col = 0, 0
+            for i in inv_for_fee:
+                w4.write(row, col, i)
+                row += 1
+            row, col = 0, 0
+            for i in nd_fee_PR:
+                w4.write(row, col+1, i)
+                row += 1
+            row=0
+            for i in nd_fee_PC:
+                w4.write(row, col+2, i)
+                row += 1
+        FillSheetsInv(worksheet1,worksheet2,worksheet3,worksheet4)
+        workbook.close()
+    XlsxWriter(PR)
+    print("")
+    print("--Экселька создана")
+
+# Now call our big checking function
+
+Sverka()
