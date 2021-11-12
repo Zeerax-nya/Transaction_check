@@ -1,0 +1,70 @@
+def ***_reestr():
+    import zipfile
+    import pathlib
+    import os
+    day=int(input())
+    # month = int(input())
+    nextDay=str(day+1)
+    from datetime import date, timedelta
+    yesterday = date.today() - timedelta(1)
+    year = date.today().year
+    year = 2021
+    month = 10
+    month = date.today().month
+    # month = str(input())
+    # day = yesterday.day
+    if int(day)< 10:
+        day = '0' + str(day)
+    if int(nextDay) < 10:
+        nextDay = '0' + str(nextDay)
+    if month < 10:
+        month = '0' + str(month)
+    day,month,nextDay,year = str(day),str(month),str(nextDay),str(year)
+    print(day)
+    print(month)
+    print(year)
+
+    pInORpOUT = ['pay_in', 'pay_out']
+    l = ['***1','***2', '***3', '***4','***5']
+
+    for j in pInORpOUT:
+        for i in l:
+            if j=='pay_out' and i=='***5':
+                break
+            Z1 = zipfile.ZipFile(
+                '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money(' + j + ')' + i + '.zip',
+                'r')
+            Z1.extractall('***/' + year + '/' + month + '/' + day + '/')
+            if i == '***1':
+                p = os.path.abspath(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv')
+                p = os.rename(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv',
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+')'+i+'.csv')
+            if i == '***2':
+                p = os.path.abspath(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv')
+                p = os.rename(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv',
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+')'+i+'.csv')
+            if i == '***3':
+                p = os.path.abspath(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv')
+                p = os.rename(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv',
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+')'+i+'.csv')
+            if i == '***4':
+                p = os.path.abspath(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv')
+                p = os.rename(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv',
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+')'+i+'.csv')
+            if i == 'pin-up.bet_rbk_1':
+                p = os.path.abspath(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv')
+                p = os.rename(
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+').csv',
+                    '***/' + year + '/' + month + '/' + day + '/'+ day + '.'+month+'.'+year+'-'+nextDay+'.'+month+'.'+year+'***.money('+j+')'+i+'.csv')
+
+    return
+***_reestr()
